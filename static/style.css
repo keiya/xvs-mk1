@@ -1,13 +1,12 @@
-/*
- *  * clearfix
- *   * http://kojika17.com/2011/04/floatclearfix.php
- *    * 20110406クラスなし修正版
- *     */
-*:after {
-	  display:block;
-	    clear:both;}
+.clearfix {
+	width:100%;
+}
+.clearfix:after {
+	content: "";
+	display: block;
+	clear: both;
+}
 
-	element:after {content:"";} /* clearfix */
 body,html {
 	background:#ccc;
 	color:#999;
@@ -36,13 +35,17 @@ footer {
 	float:left;
 	position:relative;
 	display:block;
+	transition:all 500ms ease-in-out;
 	-webkit-transition:all 500ms ease-in-out;
+	-moz-transition:all 500ms ease-in-out;
 	+filter: grayscale(100%); 
 	-webkit-filter: grayscale(100%);
+	-moz-filter: grayscale(100%);
 }
 .thumb_box:hover {
 	+filter: grayscale(0%); 
 	-webkit-filter: grayscale(0%);
+	-moz-filter: grayscale(0%);
 }
 #title {
 	width:854px;
@@ -60,6 +63,7 @@ footer {
 #player object {
 	border:none;
 	width:854px;
+	height:480px;
 	margin:0 auto;
 	padding:80px 0 100px;
 	display:block;

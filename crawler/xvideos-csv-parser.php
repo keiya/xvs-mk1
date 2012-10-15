@@ -87,7 +87,7 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 		$tagrsql->execute();
 		$tagrsql->bind_result($res_tag);
 		$tagrsql->close();
-		if ($tagdsql = $mysqli->prepare("DELETE FROM xvideos_tag WHERE xvideos_id=?")){
+		if ($tagdsql = $mysqli->prepare("DELETE FROM xvideos_tag WHERE xvideos_id=? AND is_usertag=0")){
 		}
 		else {continue;}
 		$tagdsql->bind_param('i',$video['id']);

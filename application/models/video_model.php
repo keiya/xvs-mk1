@@ -26,4 +26,18 @@ class Video_model extends CI_Model {
 		return $res->result();
 	}
 
+	public function delete_tag($vid,$tag) {
+		$res = $this->db->query(
+			'DELETE FROM xvideos_tag WHERE xvideos_id=? AND tag=?'
+		,array($vid,$tag));
+		return $res;
+	}
+
+	public function add_tag($vid,$tag) {
+		$res = $this->db->query(
+			'INSERT INTO xvideos_tag (xvideos_id,tag,is_usertag) VALUE (?,?,1)'
+		,array($vid,$tag));
+		return $res;
+	}
+
 }
