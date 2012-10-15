@@ -2,5 +2,5 @@ Order deny,allow
 Deny from all
 Allow from 126.70.91.130
 RewriteEngine on
-RewriteCond $1 !^(index\.php|favicon\.ico|robots\.txt|phpmyadmin)
+RewriteCond $1 !^(index\.php|favicon\.ico|robots\.txt|phpmyadmin|static)
 RewriteRule ^(.*)$ /index.php/$1 [L]

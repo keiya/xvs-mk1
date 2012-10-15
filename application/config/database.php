@@ -46,12 +46,12 @@
 */
 
 $active_group = 'default';
-$active_record = TRUE;
+$active_record = FALSE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = '';
-$db['default']['password'] = '';
-$db['default']['database'] = '';
+$db['default']['username'] = 'root';
+$db['default']['password'] = 'jio8yhbhkutf';
+$db['default']['database'] = 'xvs';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
