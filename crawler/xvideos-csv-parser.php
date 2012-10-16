@@ -1,10 +1,8 @@
 <?php
 
-$db['host'] = 'localhost';
-$db['user'] = 'root';
-$db['password'] = 'jio8yhbhkutf';
-$db['database'] = 'xvs';
-$mysqli = new mysqli($db['host'],$db['user'],$db['password'],$db['database']) or die('failed to connect db');
+require '../application/config/database.php';
+
+$mysqli = new mysqli($db['default']['hostname'],$db['default']['username'],$db['default']['password'],$db['default']['database']) or die('failed to connect db');
 if (mysqli_connect_errno()) {
 	printf("Connect failed: %s\n", mysqli_connect_error());
 	exit();
@@ -40,6 +38,9 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 					$video['thumb_uri'] = $data[$c];
 					break;
 				case 4:
+					if (strpos($data[$c],'japan',0) === FALSE) {
+						continue 3;
+					}
 					$video['embed_tag'] = $data[$c];
 					break;
 				case 5:
@@ -80,13 +81,13 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 			echo($vidsql->error);
 		}
 		$vidsql->close();
-		if ($tagrsql = $mysqli->prepare("SELECT tag FROM xvideos_tag WHERE xvideos_id=?")){
-		}
-		else{continue;};
-		$tagrsql->bind_param('i',$video['id']);
-		$tagrsql->execute();
-		$tagrsql->bind_result($res_tag);
-		$tagrsql->close();
+//		if ($tagrsql = $mysqli->prepare("SELECT tag FROM xvideos_tag WHERE xvideos_id=?")){
+//		}
+//		else{continue;};
+//		$tagrsql->bind_param('i',$video['id']);
+//		$tagrsql->execute();
+//		$tagrsql->bind_result($res_tag);
+//		$tagrsql->close();
 		if ($tagdsql = $mysqli->prepare("DELETE FROM xvideos_tag WHERE xvideos_id=? AND is_usertag=0")){
 		}
 		else {continue;}

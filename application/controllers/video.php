@@ -7,17 +7,88 @@ class Video extends CI_Controller {
 		$this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
 	}
 
+	public function index() {
+		$this->load->model('Video_model');
+		$cache_id = 'index.1';
+		if ($search_result = $this->cache->get($cache_id)) {
+		}
+		else {
+			$search_result = $this->Video_model->all_videos(0);
+			$this->cache->save($cache_id, $search_result,43200);
+		}
+		$this->load->view('layout',array(
+			'body'=>
+				$this->load->view('video/search',array(
+					'datas'=>$search_result,
+					'current_page'=>1,
+				),TRUE),
+			'jsmethod'=>'search',
+		));
+	}
+
+	public function index_ajax($page) {
+		$this->load->model('Video_model');
+		$cache_id = 'index.'.$page;
+		if ($search_result = $this->cache->get($cache_id)) {
+		}
+		else {
+			$search_result = $this->Video_model->all_videos($page-1);
+			$this->cache->save($cache_id, $search_result,43200);
+		}
+		$this->load->view('video/search',array(
+			'datas'=>$search_result,
+			'current_page'=>$page,
+		));
+	}
+
+	public function rank() {
+		$this->load->model('Video_model');
+		$cache_id = 'rank.1';
+		if ($search_result = $this->cache->get($cache_id)) {
+		}
+		else {
+			$search_result = $this->Video_model->get_rank(0);
+			$this->cache->save($cache_id, $search_result,43200);
+		}
+		$this->load->view('layout',array(
+			'body'=>
+				$this->load->view('video/search',array(
+					'datas'=>$search_result,
+					'current_page'=>1,
+				),TRUE),
+			'jsmethod'=>'search',
+		));
+	}
+
+	public function rank_ajax($page) {
+		$this->load->model('Video_model');
+		$cache_id = 'rank.'.$page;
+		if ($search_result = $this->cache->get($cache_id)) {
+		}
+		else {
+			$search_result = $this->Video_model->get_rank($page-1);
+			$this->cache->save($cache_id, $search_result,43200);
+		}
+		$this->load->view('video/search',array(
+			'datas'=>$search_result,
+			'current_page'=>$page,
+		));
+	}
+
 	public function id($id) {
 		$this->load->model('Video_model');
 		$this->load->library('user_agent');
+		$datas = $this->Video_model->show($id);
+		//$datas[0]->embed_tag = preg_replace("/\"always\"/","\"never\"",$datas[0]->embed_tag);
 		$this->load->view('layout',array(
 			'body'=>
 				$this->load->view('video/id',array(
-					'datas'=>$this->Video_model->show($id),
+					'datas'=>$datas,
 					'ismobile'=>$this->agent->is_mobile(),
 					'isadmin'=>$this->session->userdata('is_admin')
 				),TRUE),
 			'jsmethod'=>'video',
+			'title'=>$datas[0]->title,
 			)
 		);
 	}
@@ -30,7 +101,7 @@ class Video extends CI_Controller {
 		}
 		else {
 			$search_result = $this->Video_model->search_tag($query,$page-1);
-			$this->cache->save($cache_id, $search_result,86400);
+			$this->cache->save($cache_id, $search_result,43200);
 		}
 		$this->load->view('layout',array(
 			'body'=>
@@ -39,7 +110,8 @@ class Video extends CI_Controller {
 					'current_page'=>$page,
 					'query'=>$query
 				),TRUE),
-			'jsmethod'=>'search'
+			'jsmethod'=>'search',
+			'title'=>$query,
 		));
 	}
 
@@ -50,7 +122,7 @@ class Video extends CI_Controller {
 		}
 		else {
 			$search_result = $this->Video_model->search_tag($query,$page-1);
-			$this->cache->save($cache_id, $search_result,86400);
+			$this->cache->save($cache_id, $search_result,43200);
 		}
 		$this->load->view('video/search',array(
 			'datas'=>$search_result,

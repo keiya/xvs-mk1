@@ -6,8 +6,8 @@ cd /tmp/
 mkdir xvideos-downloader
 cd xvideos-downloader/
 
-wget -q --tries=20 --retry-connrefused --output-document=xvdb.zip --timestamping --continue $TARGET
-unzip -d . -o xvdb.zip
+wget --tries=20 --retry-connrefused --timestamping --continue $TARGET
+unzip -d . -o xvideos.com-db.csv.zip
 
 XVCSV=`find . -name '*.csv'`
 

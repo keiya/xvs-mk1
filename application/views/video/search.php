@@ -1,4 +1,4 @@
-<div id='search'>
+<div id='search' class='clearfix'>
 <?php
 $i=0;
 foreach ($datas as $data) {
@@ -16,4 +16,4 @@ foreach ($datas as $data) {
 </noscript>
 <?php } ?>
 </div>
-<script>XVS.searchQuery = '<?php echo $query; ?>';XVS.currentPage = <?php echo $current_page; ?>;</script>
+<script>XVS.searchQuery = <?php echo isset($query)?'\''.$query.'\'':0; ?>;XVS.currentPage = <?php echo $current_page; ?>;</script>

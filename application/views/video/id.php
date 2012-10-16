@@ -1,3 +1,9 @@
+<style type='text/css'>
+header,footer {
+	width:854px;
+	margin:0 auto;
+}
+</style>
 <div id='title'>
 	<h1><?php echo $datas[0]->title; ?></h1>
 </div>

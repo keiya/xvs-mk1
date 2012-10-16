@@ -38,7 +38,7 @@
 |
 */
 
-$route['default_controller'] = "welcome";
+$route['default_controller'] = "top";
 $route['404_override'] = '';
 $route['video/(:num)'] = "video/id/$1";
 
