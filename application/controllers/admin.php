@@ -16,5 +16,13 @@ class Admin extends CI_Controller {
 		}
 	}
 
+	public function cache() {
+		$this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
+		if ($this->session->userdata('is_admin')) {
+			$this->load->library('cacheman');
+			$this->cacheman->show_entry();
+		}
+	}
+
 }
 

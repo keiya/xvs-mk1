@@ -4,7 +4,7 @@ class Top extends CI_Controller {
 
 	public function index() {
 		$this->load->model('Top_model');
-		$this->load->library('user_agent');
+		$this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
 		/*
 		if ($this->agent->accept_lang('de')) {
 			$region = array('german','germany');
@@ -40,13 +40,22 @@ class Top extends CI_Controller {
 		}
 		*/
 		$datas = array();
-		$datas['new'] = $this->Top_model->get_new_videos($region);
-		$datas['high'] = $this->Top_model->get_highly_rated();
+
+		$cache_id = 'top.'.$region;
+		if ($datas = $this->cache->get($cache_id)) {
+		}
+		else {
+			$datas['new'] = $this->Top_model->get_new_videos($region);
+			$datas['high'] = $this->Top_model->get_highly_rated();
+			$this->cache->save($cache_id, $datas,43200);
+		}
+
 		$this->load->view('layout',array(
 			'body'=>
 				$this->load->view('top',array(
 					'datas'=>$datas,
-				),TRUE)
+				),TRUE),
+			'ismobile'=>$this->agent->is_mobile()
 		));
 	}
 

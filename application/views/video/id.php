@@ -22,6 +22,9 @@ header,footer {
 		<?php } ?>
 	</li>
 </script>
+<div id='options'>
+<label><input type='checkbox' id='opt-blackoutOnBlur' checked />非アクティブ時にブラックアウト</label>
+</div>
 <div id='info'>
 	<ul id='tags'>
 	<?php foreach ($datas as $data) { ?>

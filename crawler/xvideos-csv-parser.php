@@ -8,9 +8,32 @@ if (mysqli_connect_errno()) {
 	exit();
 }
 
+if ($vidsql = $mysqli->prepare(
+	"INSERT INTO xvideos (
+		id,
+		uri,
+		title,
+		duration,
+		thumb_uri,
+		embed_tag,
+		category
+	) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE
+	id=?,
+	uri=?,
+	title=?,
+	duration=?,
+	thumb_uri=?,
+	embed_tag=?,
+	category=?"
+)) {
+}else{
+	die();
+};
+
+
 $row = 1;
 if (($handle = fopen($argv[1], "r")) !== FALSE) {
-	while (($data = fgetcsv($handle, 16384, ";")) !== FALSE) {
+	while (($data = fgetcsv($handle, 4096, ";")) !== FALSE) {
 		$num = count($data);
 		$row++;
 		for ($c=0; $c < $num; $c++) {
@@ -22,7 +45,12 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 					if (is_nan($matches[1])) {
 						continue 3;
 					}
-					$video['id'] = $matches[1];
+					if (isset($matches[1])) {
+						$video['id'] = $matches[1];
+					}
+					else {
+						continue 3;
+					}
 					break;
 				case 1:
 					$video['title'] = $data[$c];
@@ -38,13 +66,10 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 					$video['thumb_uri'] = $data[$c];
 					break;
 				case 4:
-					if (strpos($data[$c],'japan',0) === FALSE) {
-						continue 3;
-					}
 					$video['embed_tag'] = $data[$c];
 					break;
 				case 5:
-					if (empty($data[$c])) {
+					if (empty($data[$c]) || strpos($data[$c],'japan',0) === FALSE) {
 						continue 3;
 					}
 					$video['tags'] = explode(',',$data[$c]);
@@ -54,33 +79,11 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 					break;
 			}
 		}
-		if ($vidsql = $mysqli->prepare(
-			"INSERT INTO xvideos (
-				id,
-				uri,
-				title,
-				duration,
-				thumb_uri,
-				embed_tag,
-				category
-			) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE
-			id=?,
-			uri=?,
-			title=?,
-			duration=?,
-			thumb_uri=?,
-			embed_tag=?,
-			category=?"
-		)) {
-		}else{
-			continue;
-		};
 		$vidsql->bind_param('ississsississs',$video['id'],$video['uri'],$video['title'],$video['duration'],$video['thumb_uri'],$video['embed_tag'],$video['category'],$video['id'],$video['uri'],$video['title'],$video['duration'],$video['thumb_uri'],$video['embed_tag'],$video['category']);
 		$vidsql->execute();
 		if ($vidsql->errno) {
 			echo($vidsql->error);
 		}
-		$vidsql->close();
 //		if ($tagrsql = $mysqli->prepare("SELECT tag FROM xvideos_tag WHERE xvideos_id=?")){
 //		}
 //		else{continue;};
@@ -105,3 +108,4 @@ if (($handle = fopen($argv[1], "r")) !== FALSE) {
 	}
 	fclose($handle);
 }
+$vidsql->close();

@@ -4,9 +4,48 @@ var XVS = function (method) {
 }
 
 XVS.prototype = {
+	_optionApplier : function(optionName,defaultVal) {
+		var selector = '#opt-'+optionName;
+		var cookieVal = klibs.loadCookie(optionName);
+		var t = {};
+		if (cookieVal == 1) {
+			$(selector).attr('checked','checked');
+		}
+		else if (cookieVal == 0) {
+			$(selector).removeAttr('checked');
+		}
+		else {
+			t[optionName] = defaultVal;
+			klibs.saveCookie(t,'/','Tue Jan 1 2030 00:00:00 GMT+0900');
+		}
+		$(selector).click(function(){
+			t[optionName] = $(selector+':checked').length;
+			klibs.saveCookie(t,'/','Tue Jan 1 2030 00:00:00 GMT+0900');
+		});
+	},
+	_optionGet : function(optionName){
+		var selector = '#opt-'+optionName;
+		return $(selector+':checked').length === 1 ? true : false;
+	},
 	search : function() {
+		var _this = this;
 		var xhrlock = false;
 		$.ajaxSetup({ cache:true,async:true });
+		function openLink() {
+			if (_this._optionGet('openAnotherWindow')) {
+				$(this).target = '_blank';
+				window.open($(this).attr('href'));
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		function apply_events() {
+			var $links = $('a.thumb_box');
+			$links.unbind('click',openLink);
+			$links.click(openLink);
+		}
 		function load_next_page() {
 			if (XVS.nextPage==0) return false;
 			if (xhrlock) return false;
@@ -16,12 +55,14 @@ XVS.prototype = {
 				$('<div>').load('/video/index_ajax/'+next_page,null,function(res,stat){
 					xhrlock = false;
 					$('#search').append($(this).find('#search').html());
+					apply_events();
 				})
 			}
 			else {
 				$('<div>').load('/video/search_tag_ajax/'+XVS.searchQuery+'/'+next_page,null,function(res,stat){
 					xhrlock = false;
 					$('#search').append($(this).find('#search').html());
+					apply_events();
 				})
 			}
 		}
@@ -31,13 +72,18 @@ XVS.prototype = {
 					load_next_page();
 				}
 			});
+			_this._optionApplier('openAnotherWindow',1);
+			apply_events();
 		});
 	},
 	video : function() {
+		var _this = this;
 		$(document).ready(function(){
 			var removeSpm = setInterval(function(){
 				if (typeof extClick != "undefined") {
 					j = {};
+					j.I = {};
+					j.I.y = function(){};
 					clearInterval(removeSpm);
 				}
 				if ($('embed').length > 0) {
@@ -47,12 +93,17 @@ XVS.prototype = {
 			},50);
 			$('#player > object').attr({'id':'embed'});
 			$('#player > object > embed').attr({'width':'854','height':'480'});
+			_this._optionApplier('blackoutOnBlur',1);
 			var view_start_date = Math.floor(new Date);
 			$(window).focus(function(){
-				$('#embed').removeClass('shade');
+				if (_this._optionGet('blackoutOnBlur')) {
+					$('#embed').removeClass('shade');
+				}
 			});
 			$(window).blur(function(){
-				$('#embed').addClass('shade');
+				if (_this._optionGet('blackoutOnBlur')) {
+					$('#embed').addClass('shade');
+				}
 			});
 			$(window).unload(function(){
 				var stime = (Math.floor(new Date) - view_start_date) / 1000;

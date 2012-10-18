@@ -1,3 +1,6 @@
+<div id='options'>
+<label><input type='checkbox' id='opt-openAnotherWindow' checked />リンクを別画面で表示</label>
+</div>
 <div id='search' class='clearfix'>
 <?php
 $i=0;
