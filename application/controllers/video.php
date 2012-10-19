@@ -9,6 +9,22 @@ class Video extends CI_Controller {
 		$this->load->library('cacheman');
 	}
 
+	private function _filter_result($datas) {
+		if ($filter_json = $this->input->cookie('opt-filter')) {
+			$filter = json_decode($filter_json);
+			$filtered_data = array();
+			foreach ($datas as $data) {
+				if ($data->duration >= $filter->minLength) {
+					$filtered_data[] = $data;
+				}
+			}
+			return $filtered_data;
+		}
+		else {
+			return $datas;
+		}
+	}
+
 	private function _index($page,$no_print) {
 		$cache_id = 'index.'.$page;
 		if ($video_result = $this->cache->get($cache_id)) {
@@ -18,7 +34,7 @@ class Video extends CI_Controller {
 			$this->cache->save($cache_id, $video_result,43200);
 		}
 		return $this->load->view('video/search',array(
-			'datas'=>$video_result,
+			'datas'=>$this->_filter_result($video_result),
 			'current_page'=>$page,
 		),$no_print);
 	}
@@ -44,7 +60,7 @@ class Video extends CI_Controller {
 			$this->cache->save($cache_id, $rank_result,43200);
 		}
 		return $this->load->view('video/search',array(
-			'datas'=>$rank_result,
+			'datas'=>$this->_filter_result($rank_result),
 			'current_page'=>$page,
 		),$no_print);
 	}
@@ -88,7 +104,7 @@ class Video extends CI_Controller {
 			$this->cache->save($cache_id, $search_result,86400);
 		}
 		return $this->load->view('video/search',array(
-			'datas'=>$search_result,
+			'datas'=>$this->_filter_result($search_result),
 			'current_page'=>$page,
 			'query'=>$query
 		),$no_print);

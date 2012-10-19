@@ -7,7 +7,7 @@
 </head>
 <body>
 <header>
-<div id='logo'></div>
+<a id='logo' href='/'></a>
 <nav>
 	<ul>
 		<li><a href="/video">新着</a></li>

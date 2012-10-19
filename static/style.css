@@ -16,6 +16,14 @@ a,a:visited {
 	color:#999;
 	text-decoration:none;
 }
+strong {
+	font-weight:bold;
+	color:#999;
+}
+em {
+	color:#aaa;
+	font-size:7pt;
+}
 h1 {
 	border-bottom: 1px solid #888;
 	margin: 10px 0;
@@ -32,6 +40,7 @@ header {
 	height:40px;
 }
 header #logo {
+	display:block;
 	position:absolute;
 	top:0;
 	left:0;
@@ -114,17 +123,18 @@ footer {
 	position:relative;
 	display:block;
 	margin-right:20px;
-	transition:all 500ms ease-in-out;
-	-webkit-transition:all 500ms ease-in-out;
-	-moz-transition:all 500ms ease-in-out;
-	+filter: grayscale(100%); 
+	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'saturate\' values=\'0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */
+	+filter: grayscale(100%);
 	-webkit-filter: grayscale(100%);
 	-moz-filter: grayscale(100%);
+	-ms-filter: grayscale(100%);
 }
 .thumb_box:hover {
-	+filter: grayscale(0%); 
+	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'saturate\' values=\'1\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */
+	+filter: grayscale(0%);
 	-webkit-filter: grayscale(0%);
 	-moz-filter: grayscale(0%);
+	-ms-filter: grayscale(0%);
 }
 #title {
 	width:854px;

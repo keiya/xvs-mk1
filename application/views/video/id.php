@@ -23,7 +23,7 @@ header,footer {
 	</li>
 </script>
 <div id='options'>
-<label><input type='checkbox' id='opt-blackoutOnBlur' checked />非アクティブ時にブラックアウト</label>
+<label><input type='checkbox' class='opt chkbox' name='blackoutOnBlur' checked />非アクティブ時にブラックアウト</label>
 </div>
 <div id='info'>
 	<ul id='tags'>

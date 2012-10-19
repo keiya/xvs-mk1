@@ -1,30 +1,62 @@
 var XVS = function (method) {
+	this.__constructor();
 	if (method)
 		return this[method]();
 }
 
 XVS.prototype = {
-	_optionApplier : function(optionName,defaultVal) {
-		var selector = '#opt-'+optionName;
-		var cookieVal = klibs.loadCookie(optionName);
-		var t = {};
-		if (cookieVal == 1) {
-			$(selector).attr('checked','checked');
-		}
-		else if (cookieVal == 0) {
-			$(selector).removeAttr('checked');
-		}
-		else {
-			t[optionName] = defaultVal;
-			klibs.saveCookie(t,'/','Tue Jan 1 2030 00:00:00 GMT+0900');
-		}
-		$(selector).click(function(){
-			t[optionName] = $(selector+':checked').length;
-			klibs.saveCookie(t,'/','Tue Jan 1 2030 00:00:00 GMT+0900');
+	__constructor : function() {
+		this.vars = {};
+	},
+	_optionApplier : function(/*optionName,defaultVal*/) {
+		// checkbox loader
+		var chkbox_selector = '.opt.chkbox';
+		$(chkbox_selector).each(function(){
+			var optionName = $(this).attr('name');
+			var cookieVal = klibs.loadCookie('opt-chkbox');
+			for (var k in cookieVal) {
+				var selector = '[name="'+k+'"]';
+				var t = {};
+				if (cookieVal[k] == 1) {
+					$(selector).attr('checked','checked');
+				}
+				else if (cookieVal[k] == 0) {
+					$(selector).removeAttr('checked');
+				}
+			}
+			$(this).click(function(){
+				var cookieVal = klibs.loadCookie('opt-chkbox');
+				cookieVal[optionName] = $('[name="'+optionName+'"]:checked').length;
+				klibs.saveCookie({'opt-chkbox':cookieVal},'/','Tue Jan 1 2030 00:00:00 GMT+0900');
+			});
 		});
 	},
+	_filterLoad : function() {
+		var filters_selector = '.opt.filter';
+		var options = {};
+		var _this = this;
+		$(filters_selector).each(function(){
+			var id = $(this).attr('id');
+			var defaultVal = $(this).attr('value');
+			var optionName = $(this).attr('name');
+			options[optionName] = defaultVal;
+			$(this).change(function(){
+				var optionName = $(this).attr('name');
+				options[optionName] = $(this).val();
+				klibs.saveCookie({'opt-filter':options},'/','Tue Jan 1 2030 00:00:00 GMT+0900');
+			});
+		});
+
+		// load default values
+		var cookieVal = klibs.loadCookie('opt-filter');
+		for (var k in cookieVal) {
+			var selector = '[name="'+k+'"]';
+			// default values is overrided by user config
+			$(selector).val(cookieVal[k]);
+		}
+	},
 	_optionGet : function(optionName){
-		var selector = '#opt-'+optionName;
+		var selector = '[name="'+optionName+'"]';
 		return $(selector+':checked').length === 1 ? true : false;
 	},
 	search : function() {
@@ -46,6 +78,13 @@ XVS.prototype = {
 			$links.unbind('click',openLink);
 			$links.click(openLink);
 		}
+		function check_scr_position() {
+			if ($(window).scrollTop() / ($(document).height()-$(window).height()) > 0.9)
+				return true;
+			else if (($(document).height()-$(window).height()) == 0)
+				return true;
+			else return false
+		}
 		function load_next_page() {
 			if (XVS.nextPage==0) return false;
 			if (xhrlock) return false;
@@ -56,6 +95,7 @@ XVS.prototype = {
 					xhrlock = false;
 					$('#search').append($(this).find('#search').html());
 					apply_events();
+					if (check_scr_position()) load_next_page();
 				})
 			}
 			else {
@@ -63,16 +103,56 @@ XVS.prototype = {
 					xhrlock = false;
 					$('#search').append($(this).find('#search').html());
 					apply_events();
+					if (check_scr_position()) load_next_page();
 				})
 			}
 		}
 		$(document).ready(function(){
 			$(window).scroll(function(){
-				if ($(this).scrollTop() / ($(document).height()-$(window).height()) > 0.9) {
-					load_next_page();
-				}
+				if (check_scr_position()) load_next_page();
 			});
-			_this._optionApplier('openAnotherWindow',1);
+			if (check_scr_position()) {
+				load_next_page();
+			}
+			_this._optionApplier();
+			_this._filterLoad();
+			var _tmpl = new KTempl({template:'video_minlength'});
+			function show_time() {
+				var minsecraw = parseInt($('[name="minLength"]').val(),10);
+				var minmin = minsecraw / 60;
+				var min_splitted = minmin.toFixed(1).split('.');
+				//var minsec = parseInt(minsecraw % 60,10);
+				//if (minsec < 10) minsec = '0'+minsec;
+				$('#timeminlength').html(_tmpl.render({min_int:min_splitted[0],min_float:min_splitted[1]}));
+				$('.thumb_box').each(function(){
+					if ($(this).attr('data-sec') < minsecraw) {
+						$(this).hide();
+					}
+					else {
+						$(this).show();
+					}
+				});
+			}
+			function changed() {
+				if (xhrlock) return false;
+				xhrlock = true;
+				$('<div>').load('/video/index_ajax/1',null,function(res,stat){
+					xhrlock = false;
+					$('#search').html($(this).find('#search').html());
+					apply_events();
+					if (check_scr_position()) load_next_page();
+				});
+			}
+			$('[name="minLength"]').change(function(){
+				show_time();
+			});
+			$('[name="minLength"]').mouseup(function(){
+				changed();
+			});
+			$('[name="minLength"]').keyup(function(){
+				changed();
+			});
+			show_time();
 			apply_events();
 		});
 	},

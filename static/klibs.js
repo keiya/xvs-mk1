@@ -51,10 +51,24 @@ klibs.loadCookie = function (key) {
 	}
 	if (i == 0)
 		return false;
-	if (key)
-		return obj[key];
-	else
+
+	if (key) {
+		if (obj[key])
+			return JSON.parse(decodeURIComponent(obj[key]));
+		else
+			return {};
+	}
+	else {
+		for (var k in obj) {
+			if (obj[k])
+				try {
+					obj[k] = JSON.parse(decodeURIComponent(obj[k]));
+				}catch(e){}
+			else
+				obj[k] = {};
+		}
 		return obj;
+	}
 }
 
 /*
@@ -67,7 +81,7 @@ klibs.saveCookie = function (obj,path,expire) {
 		path = '/';
 	var kv = '';
 	for (var key in obj) {
-		kv += encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]);
+		kv += encodeURIComponent(key) + "=" + encodeURIComponent(JSON.stringify(obj[key]));
 		if (expire) {
 			var expireDate = new Date(expire);
 			document.cookie = kv + '; expires=' + expireDate.toGMTString() + '; path=' + path;
